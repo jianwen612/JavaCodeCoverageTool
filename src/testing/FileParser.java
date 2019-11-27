@@ -76,7 +76,7 @@ public class FileParser {
 
 
         String feedback=getResult(unit.toString(),file.getName());
-//        System.out.println(unit.toString());
+        System.out.println(unit.toString());
         System.out.println(feedback);
     }
 }
