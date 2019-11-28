@@ -6,10 +6,12 @@ import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.printer.concretesyntaxmodel.CsmConditional;
 
+import java.util.HashMap;
+
 public class StatementCoverageVisitor extends ModifierVisitor<Object> {
     // AST nodes don't know which file they come from, so we'll pass the information in
     private String filename;
-
+//    static private HashMap<BlockStmt,Integer> count=new HashMap<>();
     public StatementCoverageVisitor(String filename) {
         super();
         this.filename = filename;
@@ -17,11 +19,25 @@ public class StatementCoverageVisitor extends ModifierVisitor<Object> {
 
     @Override
     public Visitable visit(ExpressionStmt node, Object arg) {
-        BlockStmt block = new BlockStmt();
-        block.addStatement(node);
-        block.addStatement(makeCoverageTrackingCall(filename, node.getBegin().get().line));
+        if(node.getParentNode().isPresent()){
+            BlockStmt parent = (BlockStmt) node.getParentNode().get();
+//            if(!count.containsKey(parent)){
+//                count.put(parent,0);
+//            }else{
+//                count.replace(parent,count.get(parent)+1);
+//            }
+//            System.out.println(count.get(parent));
+            int curIndex=parent.getChildNodes().indexOf(node);
+            Node newnode=makeCoverageTrackingCall(filename, node.getBegin().get().line);
+            newnode.setParentNode(parent);
+            parent.addStatement(curIndex*2,(ExpressionStmt)newnode);
+        }
 
-        return block;
+//        BlockStmt block = new BlockStmt();
+//        block.addStatement(node);
+//        block.addStatement(makeCoverageTrackingCall(filename, node.getBegin().get().line));
+
+        return super.visit(node,arg);
     }
     @Override
 
