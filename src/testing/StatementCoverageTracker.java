@@ -11,13 +11,14 @@ public class StatementCoverageTracker {
     private static Map<String, Map<Integer, Boolean>> coverage =
             new HashMap<String, Map<Integer, Boolean>>();
     private static final String classpath="/Users/jianwendong/softwaretesting/JavaCodeCoverageTool/classfile/";
+//    modify to your path of class file
     private static final String fileName="coverage.txt";
+    // modify if you want a different output name
     private static String report="";
     // Serializes coverage in some format; we'll revisit this.
     private static void writeCoverageToFile() throws IOException {
         countAllCoveredLine();
         File out=new File(classpath+fileName); //store to classpath/filename
-//        System.out.println(out.getAbsolutePath());
         if(!out.exists()) {
             out.createNewFile();
         } else {

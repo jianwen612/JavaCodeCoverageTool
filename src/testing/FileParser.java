@@ -33,7 +33,7 @@ public class FileParser {
 
             //执行命令
 //            String cmd="ls";
-            String cmd="/usr/bin/javac -cp "+classpath+" "
+            String cmd="javac -cp "+classpath+" "
                     +out.getAbsolutePath();
             System.out.println("command: "+cmd);
             p = Runtime.getRuntime().exec(cmd);
@@ -54,7 +54,7 @@ public class FileParser {
 //            System.out.println(feedback);
 
 
-            cmd="/usr/bin/java -cp "+classpath+" "+fileName.split("\\.")[0];
+            cmd="java -cp "+classpath+" "+fileName.split("\\.")[0];
             System.out.println("command2: "+ cmd);
             p = Runtime.getRuntime().exec(cmd);
             //取得命令结果的输出流
