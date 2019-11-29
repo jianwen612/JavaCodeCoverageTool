@@ -27,7 +27,8 @@ public class StatementCoverageVisitor extends ModifierVisitor<Object> {
 //                count.replace(parent,count.get(parent)+1);
 //            }
 //            System.out.println(count.get(parent));
-            int curIndex=parent.getChildNodes().indexOf(node);
+//            int curIndex=parent.getChildNodes().indexOf(node);
+            int curIndex=node.getBegin().get().line-parent.getChildNodes().get(0).getBegin().get().line;
             Node newnode=makeCoverageTrackingCall(filename, node.getBegin().get().line);
             newnode.setParentNode(parent);
             parent.addStatement(curIndex*2,(ExpressionStmt)newnode);
