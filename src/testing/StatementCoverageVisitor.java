@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class StatementCoverageVisitor extends ModifierVisitor<Object> {
     // AST nodes don't know which file they come from, so we'll pass the information in
     private String filename;
-//    static private HashMap<BlockStmt,Integer> count=new HashMap<>();
+    //    static private HashMap<BlockStmt,Integer> count=new HashMap<>();
     public StatementCoverageVisitor(String filename) {
         super();
         this.filename = filename;
@@ -41,7 +41,6 @@ public class StatementCoverageVisitor extends ModifierVisitor<Object> {
         return super.visit(node,arg);
     }
     @Override
-
     public Visitable visit(IfStmt node, Object arg) {
 //        BlockStmt block = new BlockStmt();
 //        block.addStatement(node);
@@ -57,10 +56,30 @@ public class StatementCoverageVisitor extends ModifierVisitor<Object> {
         node.setCondition(e);
         return super.visit(node,arg);
     }
+
     @Override
     public Visitable visit(ForStmt node, Object arg) {
+        BinaryExpr e= new BinaryExpr();
+        e.setRight(node.getCompare().get());
+        e.setOperator(BinaryExpr.Operator.OR);
+
+        e.setLeft(((ExpressionStmt)makeCoverageTrackingCall(filename, node.getBegin().get().line)).getExpression());//need expression
+        node.setCompare(e);
         return super.visit(node,arg);
     }
+
+    @Override
+    public Visitable visit(WhileStmt node, Object arg) {
+        BinaryExpr e= new BinaryExpr();
+        e.setRight(node.getCondition());
+        e.setOperator(BinaryExpr.Operator.OR);
+
+        e.setLeft(((ExpressionStmt)makeCoverageTrackingCall(filename, node.getBegin().get().line)).getExpression());//need expression
+        node.setCondition(e);
+        return super.visit(node,arg);
+    }
+
+
 
 
     private Statement makeCoverageTrackingCall(String filename, int line) {
