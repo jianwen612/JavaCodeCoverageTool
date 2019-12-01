@@ -2,15 +2,20 @@ package testing;
 
 import com.github.javaparser.*;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 
 import java.io.*;
 import java.util.Optional;
 
 public class FileParser {
+    static String classpath="D:\\Testing_Project2\\JavaCodeCoverageTool\\classfile\\";
+    static String total_coverage_file_name = "total_coverage_file.txt";
     public static String  getResult(String code,String fileName){
         Process p;
         //test.bat中的命令是ipconfig/all
-        String classpath="/Users/jianwendong/softwaretesting/JavaCodeCoverageTool/classfile/";
         String feedback = "";
         try
         {
@@ -92,11 +97,26 @@ public class FileParser {
         if(result.isPresent()){
             unit=result.get();
         }
+        int count_ifstmt = unit.findAll(IfStmt.class).size();
+        int count_exprstmt = unit.findAll(ExpressionStmt.class).size();
+        int count_forstmt = unit.findAll(ForStmt.class).size();
+        int count_whilestmt = unit.findAll(WhileStmt.class).size();
+        int total_count = count_ifstmt+count_exprstmt+count_forstmt+count_whilestmt;
+        File total_coverage_file =new File(classpath+total_coverage_file_name); //stor to classpath/filename
 
-        unit.accept(new StatementCoverageVisitor(file.getAbsolutePath()), null);
+        if(!total_coverage_file.exists()) {
+            total_coverage_file.createNewFile();
+        } else {
+            total_coverage_file.delete();
+            total_coverage_file.createNewFile();
+        }
+        //2：准备输出流
+        Writer writer = new FileWriter(total_coverage_file);
+        writer.write(String.valueOf(total_count));
+        writer.close();
+
+        unit.accept(new StatementCoverageVisitor(file.getName()), null);
         unit.addImport("testing.StatementCoverageTracker");
-
-
 
         String feedback=getResult(unit.toString(),file.getName());
         System.out.println(unit.toString());

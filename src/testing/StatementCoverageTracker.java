@@ -1,8 +1,5 @@
 package testing;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -10,12 +7,28 @@ public class StatementCoverageTracker {
     // Maps filenames and line numbers to true (executed) or false (not executed).
     private static Map<String, Map<Integer, Boolean>> coverage =
             new HashMap<String, Map<Integer, Boolean>>();
-    private static final String classpath="/Users/jianwendong/softwaretesting/JavaCodeCoverageTool/classfile/";
+    private static final String classpath="D:\\Testing_Project2\\JavaCodeCoverageTool\\classfile\\";
 //    modify to your path of class file
     private static final String fileName="coverage.txt";
     // modify if you want a different output name
+    private static final String total_coverage_file_name = "total_coverage_file.txt";
     private static String report="";
     // Serializes coverage in some format; we'll revisit this.
+    private static int total_statements = 0;
+    static{
+        File total_coverage_file = new File(classpath+total_coverage_file_name);
+        try{
+            BufferedReader in = new BufferedReader(new FileReader(total_coverage_file));
+            String str;
+            str=in.readLine();
+            if(str!= null){
+                total_statements=Integer.valueOf(str);
+            }
+        }
+        catch(IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
     private static void writeCoverageToFile() throws IOException {
         countAllCoveredLine();
         File out=new File(classpath+fileName); //store to classpath/filename
@@ -61,7 +74,8 @@ public class StatementCoverageTracker {
                 result++;
             }
         }
-        report+="Totally " +result+" lines"+ " covered";
+        report+="Totally " +result+" lines"+ " covered\n";
+        report+="Coverage rate: "+(double)result/total_statements;
         return result;
     }
 }
