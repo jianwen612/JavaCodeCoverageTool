@@ -151,7 +151,7 @@ public class FileParser {
             unit2=result2.get();
         }
         unit2.accept(new BranchCoverageVisitor(file.getName()),null);
-        unit.addImport("testing.StatementCoverageTracker");
+        unit2.addImport("testing.StatementCoverageTracker");
 
         feedback=getResult(unit2.toString(),file.getName());
         System.out.println("runtime output:\n"+feedback);
