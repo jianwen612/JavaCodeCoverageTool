@@ -8,9 +8,11 @@ public class StatementCoverageTracker {
     // Maps filenames and line numbers to true (executed) or false (not executed).
     private static Map<String, Map<Integer, Boolean>> coverage =
             new HashMap<String, Map<Integer, Boolean>>();
+
     private static String classpath="";
+
 //    modify to your path of class file
-    private static final String fileName="coverage.txt";
+    private static final String fileName="coverage_report.txt";
     // modify if you want a different output name
     private static final String total_coverage_file_name = "total_coverage_file.txt";
     private static String report="";
@@ -60,11 +62,6 @@ public class StatementCoverageTracker {
             out.createNewFile();
         }
 
-//            if(!out.getParentFile().exists()){
-//                out.getParentFile().mkdirs();
-//            }
-
-        //2：准备输出流
         Writer writer = new FileWriter(out);
         writer.write(report);
         writer.close();
@@ -95,7 +92,8 @@ public class StatementCoverageTracker {
                 result++;
             }
         }
-        report+="Totally " +result+" lines"+ " covered\n";
+        report+="Totally " +result+" lines"+ " covered";
+        report+=" out of "+total_statements+" statements\n";
         report+="Coverage rate: "+(double)result/total_statements;
         return result;
     }

@@ -15,6 +15,8 @@ import java.util.Properties;
 public class FileParser {
     static String classpath="";
     static String total_coverage_file_name = "total_coverage_file.txt";
+    static String total_branch_file_name = "total_branch_file.txt";
+
     static {
         Properties properties = new Properties();
         InputStream input = null;
@@ -33,9 +35,10 @@ public class FileParser {
             }
         }
     }
+
     public static String  getResult(String code,String fileName){
         Process p;
-        //test.bat中的命令是ipconfig/all
+
         String feedback = "";
         try
         {
@@ -46,51 +49,41 @@ public class FileParser {
                 out.delete();
                 out.createNewFile();
             }
-
-//            if(!out.getParentFile().exists()){
-//                out.getParentFile().mkdirs();
-//            }
-
-            //2：准备输出流
+            // write the new java file to classfile/
             Writer writer = new FileWriter(out);
             writer.write(code);
             writer.close();
+            //execute java compiler
 
-            //执行命令
-//            String cmd="ls";
             String cmd="javac -cp "+classpath+" "
                     +out.getAbsolutePath();
             System.out.println("command: "+cmd);
+            //read feedback from process
             p = Runtime.getRuntime().exec(cmd);
-            //取得命令结果的输出流
+
             InputStream fis=p.getInputStream();
-            //用一个读输出流类去读
+
             InputStreamReader isr=new InputStreamReader(fis);
-            //用缓冲器读行
+
             BufferedReader br=new BufferedReader(isr);
             String line=null;
-            //直到读完为止
-
 
             while((line=br.readLine())!=null)
             {
                 feedback=feedback+line+"\n";
             }
-//            System.out.println(feedback);
 
-
+            //execute java program
             cmd="java -cp "+classpath+" "+fileName.split("\\.")[0];
             System.out.println("command2: "+ cmd);
             p = Runtime.getRuntime().exec(cmd);
-            //取得命令结果的输出流
+
             fis=p.getInputStream();
-            //用一个读输出流类去读
+
             isr=new InputStreamReader(fis);
-            //用缓冲器读行
+
             br=new BufferedReader(isr);
             line=null;
-            //直到读完为止
-
 
             while((line=br.readLine())!=null)
             {
@@ -106,10 +99,7 @@ public class FileParser {
     }
     public static void main(String[] args) throws ParseException, IOException {
         FileParser fp=new FileParser();
-//        String filepath = fp.getClass().getClassLoader().getResource("./TestCode.class").getPath();
         String filepath=args[0];
-
-//        System.out.println(filepath);
         JavaParser jp=new JavaParser();
         File file=new File(filepath);
         Optional<CompilationUnit> result = jp.parse(file).getResult();
@@ -122,24 +112,48 @@ public class FileParser {
         int count_forstmt = unit.findAll(ForStmt.class).size();
         int count_whilestmt = unit.findAll(WhileStmt.class).size();
         int total_count = count_ifstmt+count_exprstmt+count_forstmt+count_whilestmt;
-        File total_coverage_file =new File(classpath+total_coverage_file_name); //store to classpath/filename
+        int total_branch = (count_forstmt+count_whilestmt+count_ifstmt)*2;
 
+        //write total statements count to file
+        File total_coverage_file =new File(classpath+total_coverage_file_name);
         if(!total_coverage_file.exists()) {
             total_coverage_file.createNewFile();
         } else {
             total_coverage_file.delete();
             total_coverage_file.createNewFile();
         }
-        //2：准备输出流
         Writer writer = new FileWriter(total_coverage_file);
         writer.write(String.valueOf(total_count));
         writer.close();
+        //write total branches count to file
+        File total_branch_file=new File(classpath+total_branch_file_name);
+        if(!total_branch_file.exists()){
+            total_branch_file.createNewFile();
+        }else{
+            total_branch_file.delete();
+            total_branch_file.createNewFile();
+        }
+        Writer writer2 = new FileWriter(total_branch_file);
+        writer2.write(String.valueOf(total_branch));
+        writer2.close();
+
 
         unit.accept(new StatementCoverageVisitor(file.getName()), null);
         unit.addImport("testing.StatementCoverageTracker");
 
         String feedback=getResult(unit.toString(),file.getName());
-        System.out.println(unit.toString());
+
+        //start branch runtime
+        Optional<CompilationUnit> result2 = jp.parse(file).getResult();
+        CompilationUnit unit2=null;
+        if(result2.isPresent()){
+            unit2=result2.get();
+        }
+        unit2.accept(new BranchCoverageVisitor(file.getName()),null);
+        unit.addImport("testing.StatementCoverageTracker");
+
+        feedback=getResult(unit2.toString(),file.getName());
         System.out.println("runtime output:\n"+feedback);
+
     }
 }
