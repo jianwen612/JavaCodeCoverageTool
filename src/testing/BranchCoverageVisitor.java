@@ -4,7 +4,6 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.visitor.Visitable;
-import sun.jvm.hotspot.opto.Block;
 
 import java.util.Optional;
 

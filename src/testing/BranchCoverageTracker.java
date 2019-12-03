@@ -25,7 +25,6 @@ public class BranchCoverageTracker {
             input = new FileInputStream("project.properties");
             properties.load(input);
             classpath_str = properties.getProperty("classpath");
-            System.out.println(properties.getProperty("classpath"));
             classpath = classpath_str;
         } catch (IOException io) {
         } finally {
@@ -36,6 +35,18 @@ public class BranchCoverageTracker {
                     e.printStackTrace();
                 }
             }
+        }
+        File total_coverage_file = new File(classpath_str+total_branch_file_name);
+        try{
+            BufferedReader in = new BufferedReader(new FileReader(total_coverage_file));
+            String str;
+            str=in.readLine();
+            if(str!= null){
+                total_branch=Integer.valueOf(str);
+            }
+        }
+        catch(IOException e){
+            System.out.println(e.getMessage());
         }
     }
     private static void writeCoverageToFile() throws IOException {

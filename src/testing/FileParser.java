@@ -140,6 +140,7 @@ public class FileParser {
 
         unit.accept(new StatementCoverageVisitor(file.getName()), null);
         unit.addImport("testing.StatementCoverageTracker");
+        unit.addImport("testing.BranchCoverageTracker");
 
         String feedback=getResult(unit.toString(),file.getName());
 
