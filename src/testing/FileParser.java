@@ -10,9 +10,29 @@ import com.github.javaparser.ast.stmt.WhileStmt;
 import java.io.*;
 import java.util.Optional;
 
+import java.util.Properties;
+
 public class FileParser {
-    static String classpath="D:\\Testing_Project2\\JavaCodeCoverageTool\\classfile\\";
+    static String classpath="";
     static String total_coverage_file_name = "total_coverage_file.txt";
+    static {
+        Properties properties = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("project.properties");
+            properties.load(input);
+            classpath = properties.getProperty("classpath");
+        } catch (IOException io) {
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
     public static String  getResult(String code,String fileName){
         Process p;
         //test.bat中的命令是ipconfig/all
@@ -102,7 +122,7 @@ public class FileParser {
         int count_forstmt = unit.findAll(ForStmt.class).size();
         int count_whilestmt = unit.findAll(WhileStmt.class).size();
         int total_count = count_ifstmt+count_exprstmt+count_forstmt+count_whilestmt;
-        File total_coverage_file =new File(classpath+total_coverage_file_name); //stor to classpath/filename
+        File total_coverage_file =new File(classpath+total_coverage_file_name); //store to classpath/filename
 
         if(!total_coverage_file.exists()) {
             total_coverage_file.createNewFile();

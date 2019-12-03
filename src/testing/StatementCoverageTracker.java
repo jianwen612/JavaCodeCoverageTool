@@ -2,12 +2,13 @@ package testing;
 import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Properties;
 
 public class StatementCoverageTracker {
     // Maps filenames and line numbers to true (executed) or false (not executed).
     private static Map<String, Map<Integer, Boolean>> coverage =
             new HashMap<String, Map<Integer, Boolean>>();
-    private static final String classpath="D:\\Testing_Project2\\JavaCodeCoverageTool\\classfile\\";
+    private static String classpath="";
 //    modify to your path of class file
     private static final String fileName="coverage.txt";
     // modify if you want a different output name
@@ -15,8 +16,28 @@ public class StatementCoverageTracker {
     private static String report="";
     // Serializes coverage in some format; we'll revisit this.
     private static int total_statements = 0;
-    static{
-        File total_coverage_file = new File(classpath+total_coverage_file_name);
+    static {
+        Properties properties = new Properties();
+        InputStream input = null;
+        String classpath_str="";
+        try {
+            input = new FileInputStream("project.properties");
+            properties.load(input);
+            classpath_str = properties.getProperty("classpath");
+            System.out.println(properties.getProperty("classpath"));
+            classpath = classpath_str;
+        } catch (IOException io) {
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        File total_coverage_file = new File(classpath_str+total_coverage_file_name);
+        System.out.println("classpath is:"+classpath_str);
         try{
             BufferedReader in = new BufferedReader(new FileReader(total_coverage_file));
             String str;
