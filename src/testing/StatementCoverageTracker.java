@@ -93,7 +93,7 @@ public class StatementCoverageTracker {
             }
         }
         report+="Totally " +result+" lines"+ " covered";
-        report+=" out of "+total_statements+" statements\n";
+        report+=" out of "+total_statements+" lines\n";
         report+="Coverage rate: "+(double)result/total_statements;
         return result;
     }
